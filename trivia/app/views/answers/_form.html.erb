@@ -1,0 +1,18 @@
+<%= form_with(model: [@question, @answer], local: true) do |form| %>
+  <div class="field">
+    <%= form.label :answer, "Respuesta" %>
+    <%= form.text_field :answer %>
+  </div>
+  <div class="field">
+    <% if @questions.present? %>
+      <%= form.label :question_id, "Pregunta" %>
+      <%= form.select :question_id, @questions.pluck(:description, :id) %>
+    <% else %>
+      <%= form.hidden_field :question_id, value: @answer.question_id %>
+      <p><%= @answer.question.description %></p>
+    <% end %>
+  </div>
+  <div class="actions">
+    <%= form.submit "Guardar" %>
+  </div>
+<% end %>

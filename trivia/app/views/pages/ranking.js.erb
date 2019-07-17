@@ -1,0 +1,5 @@
+$("#ranking").append('<h3>Ranking</h3>');
+<% @ranking.each do |r| %>
+  $("#ranking").append('<li><%= nameuser(r['user_id']).name %> [<%= r['cantidad'] %> Puntos] </li>');
+<% end %>
+$("#ranking").addClass('outrotativo');

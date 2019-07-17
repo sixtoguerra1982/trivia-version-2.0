@@ -1,0 +1,22 @@
+<div class="container">
+  <div class="mt-10">
+    <div class="panelplay">
+    	<div class="adminbodyresources">
+			<h1>Questions & Users</h1>
+			<% @answersusers.each do |respuesta| %>
+			 <ul>
+			 	<li><%= nameuser(respuesta.user_id).name %></li>
+			 	<ol>
+			 		<li><%= questionsearch(respuesta.question).description %></li>
+			 	</ol>
+			 	<ul>
+			 		<div class="<%= respuesta.value.to_s=="true" ? 'correcta' : 'incorrecta'%>">
+			 			<li><%= answerssearch(respuesta.answer_id).answer %></li>
+			 		</div>
+			 	</ul>
+			 </ul>
+			<% end %>
+		</div>
+	</div>
+ </div>
+</div>

@@ -1,0 +1,46 @@
+  function OnChangeState (id_question , id_answer) {
+
+        var form_clicks = document.querySelectorAll(".list-group-item-success");
+
+        // marcar los elementos success como warning
+        for (var i = 0; i < form_clicks.length; i++) {
+            if (form_clicks[i].classList.contains("list-group-item-success")){
+              form_clicks[i].classList.remove("list-group-item-success");
+              form_clicks[i].classList.add("list-group-item-warning");
+            }
+            var label = form_clicks[i].querySelectorAll("label");
+            label[0].innerText='Respuesta Equivocada';
+            console.log(label);
+        }
+
+        // marcar los elementos clicked como success
+        var i
+        for (i=0;i<document.FormOpt.AnswerOpt.length;i++){
+          if (document.FormOpt.AnswerOpt[i].checked){
+            var form_click = document.getElementById('form' + id_answer );
+            if (form_click.classList.contains("list-group-item-warning")){
+                form_click.classList.remove("list-group-item-warning");
+                form_click.classList.add("list-group-item-success");
+                $.ajax({
+                  url: '/answer_update/',
+                  type: 'POST',
+                  dataType: 'script',
+                  data: {tipo: true, question_id : id_question , answer: id_answer }
+                })
+                .done(function() {
+                  console.log("success");
+                })
+                .fail(function() {
+                  console.log("error");
+                })
+                .always(function() {
+                  console.log("complete");
+                });
+
+              }
+            var label = form_click.querySelectorAll("label");
+            label[0].innerText='Respuesta Correcta';
+            break;
+            }
+        }
+  }

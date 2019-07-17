@@ -1,0 +1,155 @@
+<div class="container">
+  <div class="mt-10">
+    <h1>Trivia</h1>
+
+      <% if @answerscant > 0 || !user_signed_in? %>
+        <div class="panelplay">
+          <div class="card">
+            <div class="card-header">
+              <div class="row">
+                <div class="col-md-3">
+                    <label for="Questions List Play">Respuestas</label>
+                    <div class="score">
+                      <label id="indexanswer">0</label>
+                      <label>/</label>
+                      <label><%= @answerscant %></label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="puntajefinal">
+                      <label>Correctas</label>
+                      <div class="Aciertos">
+                        <label id="puntajeporcentaje">0</label>
+                        <label>%</label>
+                      </div>
+                      <label>Erróneo</label>
+                      <div class="Aciertos">
+                        <label id="puntajeporcentajeerror">0</label>
+                        <label>%</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="ranking">
+                      <ol id="ranking">
+                      </ol>
+                    </div>
+                  </div>
+              </div>
+             </div>
+             <div class="container-fluid mt-1 mb-1">
+               <div class="card-body" id="starpanel">
+                 <div class="mt-2 mb-1 text-center">
+                   <% if user_signed_in? %>
+                    <button type="button" class="btn btn-primary" id="star">Comenzar -></button>
+                   <% else %>
+                    <%= link_to 'Ingreso (Log In)', new_user_session_path ,class: 'btn btn-primary' %></li>
+                    <%= link_to 'Registro (Sign Out)', new_user_registration_path, class: 'btn btn-primary' %></li>
+                   <% end %>
+                 </div>
+               </div>
+
+
+              <% @filtrados.each_with_index do |question,i| %>
+                <div class="answerbody" id="answerbody<%=i%>">
+                  <h5 class="card-title"><%= questionsearch(question).description %></h5>
+                  <div class="car-body">
+                    <select class="select-css" id="select<%=i%>" >
+                      <option value="0">---</option>
+                      <% answersOfQuestion(questionsearch(question).id).each do |answer|%>
+                        <li><%= answer.answer %></li>
+                        <option value="<%= answer.id %>"><%= answer.answer %></option>
+                      <% end %>
+                    </select>
+                    <div class="mt-2 mb-1">
+                      <button type="button" class="btn btn-primary finalanswer">Respuesta Definita</button>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+
+
+            </div>
+          </div>
+        </div>
+      <% else %>
+        <h5>Ya as Respondido todas las Preguntas, Gracias </h5>
+      <% end %>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+  $(document).ready(function () {
+    // interaccion a la escucha
+    document.getElementById('star').addEventListener('click',next_question,false);
+    var ElsQuestion = document.querySelectorAll('.finalanswer');
+    if (ElsQuestion) {
+      for (var i=0; i < ElsQuestion.length; i++){
+        ElsQuestion[i].addEventListener('click',next_question,false);
+      }
+    }
+  });
+
+ // next_question funcion
+
+  var cont = -1;
+  var CantQuestion = document.querySelectorAll('.finalanswer').length;
+  function next_question(){
+    if ('<%= user_signed_in? %>'){
+      var Sw = 0;
+      if (cont == -1) {
+        $('#starpanel').css("display","none");
+        $('#answerbody0').css('display', 'block');
+        $("#indexanswer").html(cont + 2);
+        cont += 1;
+      }
+      else {
+        var SelectElem  = document.getElementById('select' + cont);
+        var indice = SelectElem.selectedIndex;
+        var SelectValue = SelectElem.options[indice].value;
+        // value valor del elemento seleccionado
+        // text valor del texto
+        if (parseInt(SelectValue) > 0){
+          Sw = 1;
+          // sumar las respuestas correctas e Incorrectas
+          
+            $.ajax({
+            url: '<%= answersusers_path %>',
+            type: 'POST',
+            dataType: 'script',
+            data: {answer_id: SelectValue, panel: cont , answerscant: <%= @answerscant %>}
+            })
+          
+
+        }else {
+          alert('Respuesta no Seleccionada')
+        };
+      }
+      if (Sw==1){
+        $('#answerbody' + cont).css("display","none");
+        cont += 1;
+        $('#answerbody' + cont).css('display', 'block');
+        if (cont == CantQuestion){
+          for (var i=0; i < CantQuestion + 1; i++){
+            $('#answerbody' + i).css('display', 'block');
+          }
+          setTimeout(function(){
+            $.ajax({
+              url: '<%= ranking_path %>',
+              type: 'POST',
+              dataType: 'script'
+            })
+          }, 1000);  
+        }
+        else {
+          $("#indexanswer").html(cont + 1);
+        }
+      }
+    }
+  }
+
+
+
+</script>
